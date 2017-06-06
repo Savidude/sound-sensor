@@ -16,6 +16,15 @@ WiFiClient espClient;
 PubSubClient client(espClient);
 MDNSResponder mdns;
 
+int mic1Pin = 10; // Use Pin 10 as our Input
+int mic1Level = HIGH; // This is where we record our Sound Measurement
+
+int mic2Pin = 11;
+int mic2Level = HIGH;
+
+int mic3Pin = 12;
+int mic3Level = HIGH;
+
 void setup() {
   //Connecting nodemcu to WiFi  
   WiFi.begin(ssid, password);
@@ -32,6 +41,11 @@ void setup() {
   Serial.print("IP address: ");   Serial.println(WiFi.localIP());
 
   client.setServer(mqttServer, 1883);
+
+  //Device pin configuration
+  pinMode (mic1Pin, INPUT) ; // input from the Sound Detection Module
+  pinMode (mic2Pin, INPUT) ;
+  pinMode (mic3Pin, INPUT) ;
 }
 
 void reconnect() {
@@ -39,8 +53,6 @@ void reconnect() {
     Serial.print("Attempting MQTT connection...");
     if (client.connect("ESP8266Client", mqttUser, mqttPassword)) {
       Serial.println("connected");
-//      client.publish(mqttPubTopic, "Connected");  //publishing its status
-//      client.subscribe(mqttSubTopic);             //subscribing to topic
     }
     else {
       Serial.print("Failed, state="); Serial.print(client.state());
@@ -54,4 +66,21 @@ void loop() {
   if (!client.connected())
     reconnect();
   client.loop();
+
+  mic1Level = digitalRead (mic1Pin) ; // read the sound alarm time
+  mic2Level = digitalRead (mic2Pin) ;
+  mic3Level = digitalRead (mic3Pin) ;
+
+  char* payload = "";
+  if (mic1Level == LOW) { // If we hear a sound
+    payload = "{\"mics\":[{\"state\": 1,\"angle\": 75},{\"state\": 0,\"angle\": 90},{\"state\": 0,\"angle\": 45}]}";
+  } else if (mic2Level == LOW) {
+    payload = "{\"mics\":[{\"state\": 0,\"angle\": 75},{\"state\": 1,\"angle\": 90},{\"state\": 0,\"angle\": 45}]}";
+  } else if (mic3Level == LOW) {
+    payload = "{\"mics\":[{\"state\": 0,\"angle\": 75},{\"state\": 0,\"angle\": 90},{\"state\": 1,\"angle\": 45}]}";
+  }
+
+  if (payload != "") {
+    client.publish(mqttPubTopic, payload);
+  }
 }
