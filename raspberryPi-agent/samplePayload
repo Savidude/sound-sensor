@@ -1,0 +1,16 @@
+{
+	"mics": [
+		{
+			"state": 0,
+			"angle": 75
+		},
+		{
+			"state": 1,
+			"angle": 90
+		},
+		{
+			"state": 0,
+			"angle": 45
+		}
+	]
+}
