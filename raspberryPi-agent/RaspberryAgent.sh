@@ -8,13 +8,17 @@ then
 fi
 
 # installing dependencies
-echo ===Installing Dependencies
+echo ===========================Installing Dependencies
 sudo apt-get update
+echo ===Installing python-pip
 sudo apt-get install python-pip
+echo ===Installing paho-mqtt
 sudo pip install paho-mqtt
+echo ===Installing configparser
+sudo pip install configparser
 
 # installing mosquitto
-echo ===Installing Mosquitto
+echo ===========================Installing Mosquitto
 mkdir mosquitto
 cd mosquitto
 sudo wget http://repo.mosquitto.org/debian/mosquitto-repo.gpg.key
@@ -26,7 +30,7 @@ sudo apt-get install mosquitto
 sudo service mosquitto start
 
 #moving project folder to local directory
-echo ===Moving project folder to local directoryM
+echo ===========================Moving project folder to local directory
 sudo cp -r $currentDir/src $destination
 sudo chmod 755 $destination/src/client.py
 sudo update-rc.d -f RaspberryService.sh remove
