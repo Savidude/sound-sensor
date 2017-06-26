@@ -1,6 +1,6 @@
-ssid = "Skynet WiFi"
-password = "DeathToCapitalists"
-mqtt_broker_ip = "192.168.43.42"
+ssid = "Dialog 4G"
+password = ""
+mqtt_broker_ip = "192.168.8.106"
 mqtt_broker_port = 1883
 mqtt_topic = "micData"
 
@@ -16,17 +16,9 @@ m = mqtt.Client("ESP8266-" .. node.chipid(), 120)
 --6 = D6
 --7 = D7
 
-mic1 = 3
-gpio.mode(mic1, gpio.INPUT)
---mic1Level = gpio.HIGH
-
-mic2 = 4
-gpio.mode(mic2, gpio.INPUT)
---mic2Level = gpio.HIGH
-
-mic3 = 5
-gpio.mode(mic3, gpio.INPUT)
---mic3Level = gpio.HIGH
+angle = 45
+mic = 5
+gpio.mode(mic, gpio.INPUT)
 
 function connectMQTTClient()
     local ip = wifi.sta.getip()
@@ -45,31 +37,13 @@ end
 
 tmr.alarm(0, 100, 1, function()
     if (client_connected) then
-        mic1Level = gpio.HIGH
-        mic2Level = gpio.HIGH
-        mic2Level = gpio.HIGH
-        
-        mic1Level = gpio.read(mic1)
-        mic2Level = gpio.read(mic2)
-        mic3Level = gpio.read(mic3)
-
-        print("Mic 1: " .. mic1Level)
-        print("Mic 2: " .. mic2Level)
-        print("Mic 3: " .. mic3Level)
+        micLevel = gpio.HIGH        
+        micLevel = gpio.read(mic)
+        print("Mic Level: " .. micLevel)
         print()
 
-        if(mic1Level == gpio.LOW) then
-            payload = "{\"mics\":[{\"state\": 1,\"angle\": 75},{\"state\": 0,\"angle\": 90},{\"state\": 0,\"angle\": 45}]}"
-            m:publish(mqtt_topic, payload, 0, 0, function(client)
-                print(payload)
-            end)
-        elseif(mic2Level == gpio.LOW) then
-            payload = "{\"mics\":[{\"state\": 0,\"angle\": 75},{\"state\": 1,\"angle\": 90},{\"state\": 0,\"angle\": 45}]}"
-            m:publish(mqtt_topic, payload, 0, 0, function(client)
-                print(payload)
-            end)
-        elseif(mic3Level == gpio.LOW) then
-            payload = "{\"mics\":[{\"state\": 0,\"angle\": 75},{\"state\": 0,\"angle\": 90},{\"state\": 1,\"angle\": 45}]}"
+        if(micLevel == gpio.LOW) then
+            payload = "{\"angle\":" .. angle .. "}"
             m:publish(mqtt_topic, payload, 0, 0, function(client)
                 print(payload)
             end)

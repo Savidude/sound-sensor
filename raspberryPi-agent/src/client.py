@@ -29,7 +29,7 @@ motor_angle = 0
 
 
 # Define on_connect event Handler
-def on_connect(mosq, obj, rc):
+def on_connect(mqttc, mosq, obj, rc):
     # Subscribe to a the Topic
     mqttc.subscribe(MQTT_TOPIC, 0)
 
@@ -44,14 +44,11 @@ def on_message(mqttc, userdata, message):
     msg = (str(message.payload.decode("utf-8")))
     print(msg)
     data = json.loads(msg)
-    for item in data["mics"]:
-        if item["state"] == 1:
-            motor_angle = item["angle"]
-            print("Motor angle: ", motor_angle)
+    motor_angle = data["angle"];
+    print ("Motor angle: " + str(motor_angle));
     duty_cycle_value = 2.5 + (10 / 180.0) * motor_angle
     print("Duty cycle value: ", duty_cycle_value)
     p.ChangeDutyCycle(duty_cycle_value)
-
 
 # Initiate MQTT Client
 mqttc = mqtt.Client()
