@@ -21,3 +21,12 @@ $ nano config.ini
 $ cd ..
 $ sudo sh RaspberryAgent.sh
 ```
+
+#### Setting up the Nodemcu (V3)
+1. Flash Nodemcu [Firmware](http://www.whatimade.today/flashing-the-nodemcu-firmware-on-the-esp8266-linux-guide/) into device.
+2. Download and run [ESPlorer](https://esp8266.ru/esplorer/).
+3. Clone the project and open [init.lua](https://github.com/savidude/sound-sensor/blob/master/esp8266-agent/lua/init.lua) in ESPlorer.
+4. Setup the Nodemcu with the sound sensor as shown (Vcc - Vin, GND - GND, OUT - D5)
+![Nodemcu Setup](https://github.com/savidude/sound-sensor/blob/master/esp8266-agent/images/nodemcu.png "Nodemcu Setup")
+5. Set the WiFi SSID and password, mqtt_broker_ip, and angle in the file.
+6. Save file to ESP.
