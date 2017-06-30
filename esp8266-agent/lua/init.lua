@@ -16,7 +16,7 @@ m = mqtt.Client("ESP8266-" .. node.chipid(), 120)
 --6 = D6
 --7 = D7
 
-angle = 0
+angle = 80
 mic = 5
 gpio.mode(mic, gpio.INPUT)
 
@@ -39,11 +39,11 @@ index = 0;
 ready = false
 
 
-tmr.alarm(0, 100, 1, function()
+tmr.alarm(0, 50, 1, function()
     if (client_connected) then
         micLevel = gpio.HIGH        
         micLevel = gpio.read(mic)
-        if (index == 20) then
+        if (index == 50) then
             index = 0
             ready = true
         end
@@ -54,7 +54,7 @@ tmr.alarm(0, 100, 1, function()
         if ready then
             count = 0
                         
-            for i=0, 19, 1
+            for i=0, 49, 1
             do
                 if (last[i] == 0) then
                     count = count +1
