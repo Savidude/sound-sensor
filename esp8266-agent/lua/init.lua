@@ -1,6 +1,6 @@
-ssid = "Dialog 4G"
+ssid = ""
 password = ""
-mqtt_broker_ip = "192.168.8.106"
+mqtt_broker_ip = "192.168.8.101"
 mqtt_broker_port = 1883
 mqtt_topic = "micData"
 
@@ -16,7 +16,7 @@ m = mqtt.Client("ESP8266-" .. node.chipid(), 120)
 --6 = D6
 --7 = D7
 
-angle = 45
+angle = 0
 mic = 5
 gpio.mode(mic, gpio.INPUT)
 
@@ -34,19 +34,42 @@ function connectMQTTClient()
     end
 end
 
+last = {}
+index = 0;
+ready = false
+
 
 tmr.alarm(0, 100, 1, function()
     if (client_connected) then
         micLevel = gpio.HIGH        
         micLevel = gpio.read(mic)
-        print("Mic Level: " .. micLevel)
-        print()
+        if (index == 20) then
+            index = 0
+            ready = true
+        end
+        print("Mic level: " .. micLevel)
+        last[index] = micLevel
+        index = index + 1
 
-        if(micLevel == gpio.LOW) then
-            payload = "{\"angle\":" .. angle .. "}"
-            m:publish(mqtt_topic, payload, 0, 0, function(client)
-                print(payload)
-            end)
+        if ready then
+            count = 0
+                        
+            for i=0, 19, 1
+            do
+                if (last[i] == 0) then
+                    count = count +1
+                end
+            end  
+            print ("Count: " .. count)          
+                
+            if (count > 2) then
+                payload = "{\"angle\":" .. angle .. "}"
+                ready = false
+                index = 0
+                m:publish(mqtt_topic, payload, 0, 0, function(client)
+                    print(payload)
+                end)
+            end
         end
     else
         connectMQTTClient()
